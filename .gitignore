@@ -1,0 +1,19 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+
+# Build outputs
+**/bin/
+**/obj/
+
+# Temporary files
+*.tmp
+*.log
+
+# React / Node.js
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
