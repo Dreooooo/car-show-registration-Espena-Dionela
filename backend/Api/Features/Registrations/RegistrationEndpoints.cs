@@ -2,6 +2,7 @@
 using Api.Common.Filters;
 using Application.Features.Registrations.CreateRegistration;
 using Application.Features.Registrations.GetRegistrations;
+using Application.Features.Registrations.GetRegistrationById;
 
 namespace Api.Features.Registrations;
 
@@ -12,6 +13,27 @@ public static class RegistrationEndpoints
     {
         var group = app.MapGroup("/api/registrations")
             .WithTags("Registrations");
+
+        // GET: Retrieve a registration by ID
+        group.MapGet("/{id:guid}", async (
+            Guid id,
+            GetRegistrationByIdHandler handler,
+            CancellationToken cancellationToken) =>
+        {
+            var query = new GetRegistrationByIdQuery(id);
+
+            var result = await handler.HandleAsync(
+                query, cancellationToken);
+
+            if (!result.IsSuccess)
+            {
+                return result.ToProblemDetails();
+            }
+
+            return Results.Ok(result.Value!.Registration);
+        })
+        .WithName("GetRegistrationById")
+        .WithSummary("Get a registration by ID");
 
         // GET: Retrieve registrations with filtering and pagination
         group.MapGet("/", async (
