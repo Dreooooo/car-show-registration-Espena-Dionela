@@ -80,6 +80,9 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasIndex("PlateNumber")
                         .IsUnique();
 
+                    b.HasIndex("RegistrationNumber")
+                        .IsUnique();
+
                     b.ToTable("Registrations");
                 });
 #pragma warning restore 612, 618

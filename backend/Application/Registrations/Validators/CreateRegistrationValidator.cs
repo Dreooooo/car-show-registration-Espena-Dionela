@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Application.Features.Registrations.CreateRegistration;
 using FluentValidation;
+using Application.Registrations;
 
 namespace Application.Registrations.Validators;
 
@@ -40,7 +41,14 @@ public class CreateRegistrationValidator : AbstractValidator<CreateRegistrationC
             .IsInEnum();
 
         RuleFor(x => x.AmountPaid)
-            .GreaterThanOrEqualTo(0);
+            .GreaterThanOrEqualTo(0)
+            .WithMessage("Amount paid cannot be negative.");
+
+        RuleFor(x => x.AmountPaid)
+            .Must((command, amountPaid) =>
+                amountPaid <= RegistrationFees.GetFee(command.RegistrationType))
+            .When(x => Enum.IsDefined(x.RegistrationType))
+            .WithMessage("Amount paid cannot exceed the registration fee.");
     }
 }
 

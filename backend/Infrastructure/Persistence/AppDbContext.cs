@@ -50,6 +50,9 @@ public sealed class AppDbContext : DbContext, IAppDbContext
             entity.HasIndex(r => r.PlateNumber)
                 .IsUnique();
 
+            entity.HasIndex(r => r.RegistrationNumber)
+                .IsUnique();
+
             entity.Property(r => r.RegistrationFee)
                 .HasPrecision(10, 2);
 

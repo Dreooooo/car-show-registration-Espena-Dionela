@@ -22,6 +22,19 @@ public sealed class CreateRegistrationHandler
         CreateRegistrationCommand command,
         CancellationToken cancellationToken = default)
     {
+        var plateNumberExists = await _context.Registrations
+            .AnyAsync(
+                x => x.PlateNumber.ToUpper() == command.PlateNumber.ToUpper(),
+                cancellationToken);
+
+        if (plateNumberExists)
+        {
+            return Result<CreateRegistrationResponse>.Failure(
+                new Error(
+                    "Registration.Conflict",
+                    "This plate number is already registered."));
+        }
+
         var registration = new Registration
         {
             RegistrationNumber = await GenerateRegistrationNumber(cancellationToken),
