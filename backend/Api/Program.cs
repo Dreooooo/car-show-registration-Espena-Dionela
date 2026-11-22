@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Api.Features.Registrations;
 using Application.Features.Registrations.CreateRegistration;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +27,24 @@ builder.Services.AddValidatorsFromAssembly(typeof(IAppDbContext).Assembly);
 builder.Services.AddScoped<CreateRegistrationHandler>();
 
 // API
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 builder.Services.AddEndpointsApiExplorer();
+
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer((document, _, _) =>
@@ -38,6 +56,7 @@ builder.Services.AddOpenApi(options =>
 });
 
 var app = builder.Build();
+app.UseCors("AllowReactApp");
 
 // Create database
 using (var scope = app.Services.CreateScope())

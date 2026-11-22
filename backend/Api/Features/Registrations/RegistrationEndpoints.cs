@@ -1,6 +1,6 @@
 ﻿using Api.Common.Extensions;
+using Api.Common.Filters;
 using Application.Features.Registrations.CreateRegistration;
-using FluentValidation;
 
 namespace Api.Features.Registrations;
 
@@ -14,25 +14,9 @@ public static class RegistrationEndpoints
 
         group.MapPost("/", async (
             CreateRegistrationCommand command,
-            IValidator<CreateRegistrationCommand> validator,
             CreateRegistrationHandler handler,
             CancellationToken cancellationToken) =>
         {
-            var validationResult = await validator.ValidateAsync(
-                command,
-                cancellationToken);
-
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors
-                    .GroupBy(x => x.PropertyName)
-                    .ToDictionary(
-                        x => x.Key,
-                        x => x.Select(error => error.ErrorMessage).ToArray());
-
-                return Results.ValidationProblem(errors);
-            }
-
             var result = await handler.Handle(command, cancellationToken);
 
             if (!result.IsSuccess)
@@ -44,10 +28,10 @@ public static class RegistrationEndpoints
                 $"/api/registrations/{result.Value!.Id}",
                 result.Value);
         })
+        .AddEndpointFilter<ValidationFilter<CreateRegistrationCommand>>()
         .WithName("CreateRegistration")
         .WithSummary("Create a new car show registration");
 
         return app;
     }
 }
-
