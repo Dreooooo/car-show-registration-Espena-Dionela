@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Application.Registrations;
+using Application.Features.Registrations;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 

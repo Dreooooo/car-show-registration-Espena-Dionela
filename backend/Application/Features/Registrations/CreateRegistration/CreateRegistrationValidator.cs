@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Application.Features.Registrations.CreateRegistration;
 using FluentValidation;
-using Application.Registrations;
+using Application.Features.Registrations;
 
-namespace Application.Registrations.Validators;
+namespace Application.Features.Registrations.CreateRegistration;
 
 public class CreateRegistrationValidator : AbstractValidator<CreateRegistrationCommand>
 {

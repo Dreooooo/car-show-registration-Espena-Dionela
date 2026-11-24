@@ -1,7 +1,6 @@
-﻿using Application.Features.Registrations.GetRegistrations;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace Application.Registrations.Validators;
+namespace Application.Features.Registrations.GetRegistrations;
 
 public sealed class GetRegistrationsValidator
     : AbstractValidator<GetRegistrationsQuery>

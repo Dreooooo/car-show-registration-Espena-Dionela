@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Domain.Entities;
 
-namespace Application.Registrations;
+namespace Application.Features.Registrations;
 
 public static class RegistrationFees
 {

@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Application.Abstractions.Data;
-using Application.Registrations;
 using Domain.Common;
+using Application.Features.Registrations;
 using Domain.Entities;
 
 namespace Application.Features.Registrations.CreateRegistration;
