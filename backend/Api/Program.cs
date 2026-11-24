@@ -9,6 +9,7 @@ using Api.Features.Registrations;
 using Application.Features.Registrations.CreateRegistration;
 using Application.Features.Registrations.GetRegistrations;
 using Application.Features.Registrations.GetRegistrationById;
+using Application.Features.Registrations.GetRegistrationSummary;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,7 @@ builder.Services.AddValidatorsFromAssembly(typeof(IAppDbContext).Assembly);
 builder.Services.AddScoped<CreateRegistrationHandler>();
 builder.Services.AddScoped<GetRegistrationsHandler>();
 builder.Services.AddScoped<GetRegistrationByIdHandler>();
+builder.Services.AddScoped<GetRegistrationSummaryHandler>();
 
 // API
 builder.Services.ConfigureHttpJsonOptions(options =>
