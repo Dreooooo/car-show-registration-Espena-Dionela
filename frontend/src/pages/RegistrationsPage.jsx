@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchRegistrations } from '../api/registrationsApi'
+import { getRegistrations, getSummary } from '../api/sample-data'
 import KpiCards from '../components/KpiCards'
 import Pagination from '../components/Pagination'
 import RegistrationFilters from '../components/RegistrationFilters'
@@ -9,7 +9,7 @@ import { useDebounce } from '../hooks/useDebounce'
 const PAGE_SIZE = 5
 
 const emptyKpis = {
-  totalRegistration: 0,
+  totalRegistrations: 0,
   totalPayments: 0,
   uncollectedPayments: 0,
   confirmed: 0,
@@ -20,31 +20,46 @@ export default function RegistrationsPage() {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('All')
   const [page, setPage] = useState(1)
+
   const [registrations, setRegistrations] = useState({
     items: [],
     totalCount: 0,
+    totalPages: 0,
     kpis: emptyKpis,
   })
+
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
   const debouncedSearch = useDebounce(search)
 
   useEffect(() => {
     let active = true
 
-    fetchRegistrations({
-      search: debouncedSearch,
-      status,
-      page,
-      pageSize: PAGE_SIZE,
-    })
-      .then((result) => {
+    async function loadDashboard() {
+      try {
+        setLoading(true)
+        setError('')
+
+        const [registrationResult, summaryResult] = await Promise.all([
+          getRegistrations({
+            participantName: debouncedSearch,
+            status,
+            page,
+            pageSize: PAGE_SIZE,
+          }),
+          getSummary(),
+        ])
+
+        console.log('SUMMARY RESULT:', summaryResult)
+
         if (active) {
-          setRegistrations(result)
-          setError('')
+          setRegistrations({
+            ...registrationResult,
+            kpis: summaryResult,
+          })
         }
-      })
-      .catch((requestError) => {
+      } catch (requestError) {
         if (active) {
           setError(
             requestError instanceof Error
@@ -52,12 +67,14 @@ export default function RegistrationsPage() {
               : 'Unable to load registrations.',
           )
         }
-      })
-      .finally(() => {
+      } finally {
         if (active) {
           setLoading(false)
         }
-      })
+      }
+    }
+
+    loadDashboard()
 
     return () => {
       active = false
@@ -67,24 +84,21 @@ export default function RegistrationsPage() {
   const updateSearch = (value) => {
     setSearch(value)
     setPage(1)
-    setLoading(true)
   }
 
   const updateStatus = (value) => {
     setStatus(value)
     setPage(1)
-    setLoading(true)
   }
 
   const updatePage = (value) => {
     setPage(value)
-    setLoading(true)
   }
 
   return (
     <main className="registrations-page">
       <header className="registrations-header">
-        <h1>Registrations</h1>
+        <h1>Car Show 2027</h1>
         <p>Manage event registrations, payments, and check-ins.</p>
       </header>
 
