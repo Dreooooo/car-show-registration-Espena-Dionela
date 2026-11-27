@@ -6,8 +6,6 @@ import RegistrationFilters from '../components/RegistrationFilters'
 import RegistrationTable from '../components/RegistrationTable'
 import { useDebounce } from '../hooks/useDebounce'
 
-const PAGE_SIZE = 5
-
 const emptyKpis = {
   totalRegistrations: 0,
   totalPayments: 0,
@@ -21,6 +19,7 @@ export default function RegistrationsPage() {
   const [status, setStatus] = useState('All')
   const [type, setType] = useState('All')
   const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(5)
 
   const [registrations, setRegistrations] = useState({
     items: [],
@@ -48,7 +47,7 @@ export default function RegistrationsPage() {
             status,
             type,
             page,
-            pageSize: PAGE_SIZE,
+            pageSize,
           }),
           getSummary(),
         ])
@@ -79,7 +78,7 @@ export default function RegistrationsPage() {
     return () => {
       active = false
     }
-  }, [debouncedSearch, status, type, page])
+  }, [debouncedSearch, status, type, page, pageSize])
 
   const updateSearch = (value) => {
     setSearch(value)
@@ -96,15 +95,20 @@ export default function RegistrationsPage() {
     setPage(1)
   }
 
+  const updatePage = (value) => {
+    setPage(value)
+  }
+
+  const updatePageSize = (value) => {
+    setPageSize(value)
+    setPage(1)
+  }
+
   const clearFilters = () => {
     setSearch('')
     setStatus('All')
     setType('All')
     setPage(1)
-  }
-
-  const updatePage = (value) => {
-    setPage(value)
   }
 
   return (
@@ -116,7 +120,10 @@ export default function RegistrationsPage() {
 
       <KpiCards kpis={registrations.kpis ?? emptyKpis} />
 
-      <section className="registrations-list" aria-label="Registration list">
+      <section
+        className="registrations-list"
+        aria-label="Registration list"
+      >
         <RegistrationFilters
           search={search}
           onSearchChange={updateSearch}
@@ -133,16 +140,22 @@ export default function RegistrationsPage() {
           </p>
         )}
 
-        <RegistrationTable
-          items={registrations.items ?? []}
-          loading={loading}
-        />
+        {/* Only the registration table scrolls */}
+        <div className="h-[420px] overflow-y-auto overflow-x-auto">
+          <RegistrationTable
+            items={registrations.items ?? []}
+            loading={loading}
+          />
+        </div>
 
+        {/* Pagination stays outside the scrollable area */}
         <Pagination
           page={page}
-          pageSize={PAGE_SIZE}
+          pageSize={pageSize}
           totalCount={registrations.totalCount ?? 0}
+          totalPages={registrations.totalPages}
           onPageChange={updatePage}
+          onPageSizeChange={updatePageSize}
         />
       </section>
     </main>
