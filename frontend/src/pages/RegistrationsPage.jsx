@@ -19,6 +19,7 @@ const emptyKpis = {
 export default function RegistrationsPage() {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('All')
+  const [type, setType] = useState('All')
   const [page, setPage] = useState(1)
 
   const [registrations, setRegistrations] = useState({
@@ -45,13 +46,12 @@ export default function RegistrationsPage() {
           getRegistrations({
             participantName: debouncedSearch,
             status,
+            type,
             page,
             pageSize: PAGE_SIZE,
           }),
           getSummary(),
         ])
-
-        console.log('SUMMARY RESULT:', summaryResult)
 
         if (active) {
           setRegistrations({
@@ -79,7 +79,7 @@ export default function RegistrationsPage() {
     return () => {
       active = false
     }
-  }, [debouncedSearch, status, page])
+  }, [debouncedSearch, status, type, page])
 
   const updateSearch = (value) => {
     setSearch(value)
@@ -88,6 +88,18 @@ export default function RegistrationsPage() {
 
   const updateStatus = (value) => {
     setStatus(value)
+    setPage(1)
+  }
+
+  const updateType = (value) => {
+    setType(value)
+    setPage(1)
+  }
+
+  const clearFilters = () => {
+    setSearch('')
+    setStatus('All')
+    setType('All')
     setPage(1)
   }
 
@@ -110,6 +122,9 @@ export default function RegistrationsPage() {
           onSearchChange={updateSearch}
           status={status}
           onStatusChange={updateStatus}
+          type={type}
+          onTypeChange={updateType}
+          onClearFilters={clearFilters}
         />
 
         {error && (
